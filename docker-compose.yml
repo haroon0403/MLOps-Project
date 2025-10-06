@@ -2,22 +2,24 @@ version: "3.9"
 
 services:
   mlflow:
-    image: mlflow/mlflow:latest
-    ports:
-      - "5000:5000"
-    environment:
-      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    image: python:3.9-slim
+    container_name: mlflow
+    working_dir: /app
     volumes:
       - ./mlruns:/mlruns
     command: >
-      mlflow server
-      --backend-store-uri sqlite:///mlflow.db
-      --default-artifact-root /mlruns
-      --host 0.0.0.0
-      --port 5000
+      sh -c "pip install mlflow==2.15.0 && 
+             mlflow server 
+             --backend-store-uri sqlite:///mlflow.db 
+             --default-artifact-root /mlruns 
+             --host 0.0.0.0 
+             --port 5000"
+    ports:
+      - "5000:5000"
 
   api:
     build: .
+    container_name: mlops-api
     ports:
       - "8000:8000"
     environment:
