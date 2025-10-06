@@ -29,4 +29,7 @@ with mlflow.start_run():
 
     mlflow.sklearn.log_model(model, "model")
 
+    # Print Run ID (optional)
+    print("Run ID:", mlflow.active_run().info.run_id)
+
 print("Training done and model logged to MLflow.")
