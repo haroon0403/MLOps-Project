@@ -1,22 +1,22 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import mlflow.pyfunc
-
-# Load latest model from MLflow
-model = mlflow.pyfunc.load_model("runs:/<REPLACE_WITH_RUN_ID>/model")
+import pandas as pd
+import mlflow.sklearn
+import os
 
 app = FastAPI()
 
-class InputData(BaseModel):
-    feature1: float
-    feature2: float
+MLFLOW_TRACKING_URI = "http://mlflow:5000"
+MODEL_URI = "runs:/<REPLACE_WITH_RUN_ID>/model"  # Replace manually after training
 
-@app.get("/")
-def read_root():
-    return {"message": "API is running"}
+mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+model = mlflow.sklearn.load_model(MODEL_URI)
+
+class InputData(BaseModel):
+    features: list
 
 @app.post("/predict")
 def predict(data: InputData):
-    input_data = [[data.feature1, data.feature2]]
-    prediction = model.predict(input_data)
-    return {"prediction": int(prediction[0])}
+    df = pd.DataFrame([data.features])
+    preds = model.predict(df)
+    return {"prediction": preds.tolist()}
