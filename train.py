@@ -6,9 +6,9 @@ import mlflow.sklearn
 import os
 
 # Read dataset
-df = pd.read_csv("data/data.csv")
-X = df.drop("target", axis=1)
-y = df["target"]
+df = pd.read_csv("data/dataset.csv")
+X = df.drop("label", axis=1)   # <-- changed from "target" to "label"
+y = df["label"]                # <-- changed from "target" to "label"
 
 mlflow.set_tracking_uri("http://mlflow:5000")
 mlflow.set_experiment("mlops_lab")
@@ -29,7 +29,7 @@ with mlflow.start_run():
 
     mlflow.sklearn.log_model(model, "model")
 
-    # Print Run ID (optional)
+    # Print Run ID
     print("Run ID:", mlflow.active_run().info.run_id)
 
 print("Training done and model logged to MLflow.")
